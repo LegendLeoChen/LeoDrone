@@ -1,0 +1,836 @@
+<?xml version='1.0'?>
+<sdf version="1.6">
+  <model name="iris_demo">
+    <include>
+      <uri>model://iris_with_standoffs</uri>
+    </include>
+
+    <include>
+      <uri>model://gimbal_small_2d</uri>
+      <pose>0 -0.01 0.070 1.57 0 1.57</pose>
+    </include>
+
+    <joint name="iris_gimbal_mount" type="revolute">
+      <parent>iris::base_link</parent>
+      <child>gimbal_small_2d::base_link</child>
+      <axis>
+        <limit>
+          <lower>0</lower>
+          <upper>0</upper>
+        </limit>
+        <xyz>0 0 1</xyz>
+        <use_parent_model_frame>true</use_parent_model_frame>
+      </axis>
+    </joint>
+    <link name="cam_link">
+      <pose>0 0 0 0 0 0</pose>
+      <inertial>
+        <mass>0.00001</mass>
+        <inertia>
+          <ixx>0.0001</ixx>
+          <iyy>0.0001</iyy>
+          <izz>0.0001</izz>
+        </inertia>
+      </inertial>
+      <sensor name="chase_cam" type="camera">
+        <pose>0 0 0.05 0 1.57 0</pose>
+        <camera>
+          <horizontal_fov>1.2</horizontal_fov>
+          <image>
+            <width>1080</width>
+            <height>720</height>
+          </image>
+          <clip>
+            <near>0.1</near>
+            <far>1000</far>
+          </clip>
+        </camera>
+        <always_on>0</always_on>
+        <update_rate>60</update_rate>
+        <visualize>true</visualize>
+        <plugin name="camera_plugin" filename="libgazebo_ros_camera.so">
+          <alwaysOn>true</alwaysOn>
+          <updateRate>60</updateRate>
+          <cameraName>iris_demo/camera</cameraName>
+          <imageTopicName>image_raw</imageTopicName>
+          <cameraInfoTopicName>camera_info</cameraInfoTopicName>
+          <frameName>cam_link</frameName>
+          <hackBaseline>0.07</hackBaseline>
+          <distortionK1>0.0</distortionK1>
+          <distortionK2>0.0</distortionK2>
+          <distortionK3>0.0</distortionK3>
+          <distortionT1>0.0</distortionT1>
+          <distortionT2>0.0</distortionT2>
+        </plugin>
+      </sensor>
+      <sensor type="depth" name="depth_camera">
+        <pose>0 0 0.05 0 1.57 0</pose>
+        <update_rate>30.0</update_rate>
+        <camera>
+          <horizontal_fov>1.3962634</horizontal_fov>
+          <image>
+            <width>1080</width>
+            <height>720</height>
+            <format>R8G8B8</format>
+          </image>
+          <clip>
+            <near>0.02</near>
+            <far>300</far>
+          </clip>
+        </camera>
+        <plugin name="depth_camera_controller" filename="libgazebo_ros_camera.so">
+          <alwaysOn>true</alwaysOn>
+          <updateRate>0.0</updateRate>
+          <cameraName>/depth_camera</cameraName>
+          <imageTopicName>depth_image_raw</imageTopicName>
+          <cameraInfoTopicName>depth_camera_info</cameraInfoTopicName>
+          <frameName>cam_link</frameName>
+        </plugin>
+      </sensor>
+    </link>
+    <joint name="camera_mount" type="fixed">
+      <child>cam_link</child>
+      <parent>iris::base_link</parent>
+      <axis>
+        <xyz>0 0 0</xyz>
+        <limit>
+          <upper>0</upper>
+          <lower>0</lower>
+        </limit>
+      </axis>
+    </joint>
+    <link name="imu_link">
+      <visual name="imu_visual">
+        <pose>0 0 0.06 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>0.01 0.01 0.01</size>
+          </box>
+        </geometry>
+      </visual>
+      <collision name="imu_collision">
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>0.01 0.01 0.01</size>
+          </box>
+        </geometry>
+      </collision>
+      <inertial>
+        <mass>0.0001</mass>
+        <inertia>
+          <ixx>0.000190416666667</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.0001904</iyy>
+          <iyz>0</iyz>
+          <izz>0.00036</izz>
+        </inertia>
+      </inertial>
+      <sensor name="imu_sensor" type="imu">
+        <plugin filename="libgazebo_ros_imu_sensor.so" name="imu_plugin">
+          <ros>
+            <namespace>/</namespace>
+            <remapping>~/out:=imu</remapping>
+          </ros>
+          <initial_orientation_as_reference>false</initial_orientation_as_reference>
+        </plugin>
+        <always_on>true</always_on>
+        <update_rate>100</update_rate>
+        <visualize>true</visualize>
+        <imu>
+          <angular_velocity>
+            <x>
+              <noise type="gaussian">
+                <mean>0.0</mean>
+                <stddev>2e-4</stddev>
+                <bias_mean>0.0000075</bias_mean>
+                <bias_stddev>0.0000008</bias_stddev>
+              </noise>
+            </x>
+            <y>
+              <noise type="gaussian">
+                <mean>0.0</mean>
+                <stddev>2e-4</stddev>
+                <bias_mean>0.0000075</bias_mean>
+                <bias_stddev>0.0000008</bias_stddev>
+              </noise>
+            </y>
+            <z>
+              <noise type="gaussian">
+                <mean>0.0</mean>
+                <stddev>2e-4</stddev>
+                <bias_mean>0.0000075</bias_mean>
+                <bias_stddev>0.0000008</bias_stddev>
+              </noise>
+            </z>
+          </angular_velocity>
+          <linear_acceleration>
+            <x>
+              <noise type="gaussian">
+                <mean>0.0</mean>
+                <stddev>1.7e-3</stddev>
+                <bias_mean>0.000001</bias_mean>
+                <bias_stddev>0.0000001</bias_stddev>
+              </noise>
+            </x>
+            <y>
+              <noise type="gaussian">
+                <mean>0.0</mean>
+                <stddev>1.7e-3</stddev>
+                <bias_mean>0.000001</bias_mean>
+                <bias_stddev>0.0000001</bias_stddev>
+              </noise>
+            </y>
+            <z>
+              <noise type="gaussian">
+                <mean>0.0</mean>
+                <stddev>1.7e-3</stddev>
+                <bias_mean>0.000001</bias_mean>
+                <bias_stddev>0.0000001</bias_stddev>
+              </noise>
+            </z>
+          </linear_acceleration>
+        </imu>
+      </sensor>
+    </link>
+    <joint name="imu_mount" type="fixed">
+      <child>imu_link</child>
+      <parent>iris::base_link</parent>
+      <axis>
+        <xyz>0 0 0</xyz>
+        <limit>
+          <upper>0</upper>
+          <lower>0</lower>
+        </limit>
+      </axis>
+    </joint>
+    <!-- 添加3D雷达 -->
+    <!-- <link name="laser_link">
+    <pose>0 0 0.06 0 0 0</pose>
+    <inertial>
+        <mass>0.0002</mass>
+        <inertia>
+            <ixx>0.001087473</ixx>
+            <iyy>0.001087473</iyy>
+            <izz>0.001092437</izz>
+            <ixy>0</ixy>
+            <ixz>0</ixz>
+            <iyz>0</iyz>
+        </inertia>
+    </inertial>
+    <collision name="laser_collision">
+        <geometry>
+            <cylinder>
+                <radius>0.01</radius>
+                <length>0.01</length>
+            </cylinder>
+        </geometry>
+    </collision>
+    <visual name="laser_visual">
+        <geometry>
+            <cylinder>
+                <radius>0.01</radius>
+                <length>0.01</length>
+            </cylinder>
+        </geometry>
+    </visual>
+    <sensor name="laser_sensor" type="ray">
+        <always_on>true</always_on>
+        <visualize>false</visualize>
+        <update_rate>5</update_rate>
+        <pose>0 0 0.075 0 0 0</pose>
+        <ray>
+            <scan>
+                <horizontal>
+                    <samples>360</samples>
+                    <resolution>1.000000</resolution>
+                    <min_angle>0.000000</min_angle>
+                    <max_angle>6.280000</max_angle>
+                </horizontal>
+                <vertical>
+                    <samples>60</samples>
+                    <resolution>1.000000</resolution>
+                    <min_angle>-0.5236</min_angle>
+                    <max_angle>0.5236</max_angle>
+                </vertical>
+            </scan>
+            <range>
+                <min>0.30000</min>
+                <max>6</max>
+                <resolution>0.015000</resolution>
+            </range>
+            <noise>
+                <type>gaussian</type>
+                <mean>0.0</mean>
+                <stddev>0.0001</stddev>
+            </noise>
+        </ray>
+        <plugin name="laserscan" filename="libgazebo_ros_ray_sensor.so">
+            <ros>
+                <remapping>~/out:=scan</remapping>
+            </ros>
+            <output_type>sensor_msgs/LaserScan</output_type>
+            <frame_name>laser_link</frame_name>
+        </plugin>
+    </sensor>
+</link>
+    
+  <joint name="laser_mount" type="fixed">
+    <child>laser_link</child>
+    <parent>iris::base_link</parent>
+    <axis>
+      <xyz>0 0 0</xyz>
+      <limit>
+        <upper>0</upper>
+        <lower>0</lower>
+      </limit>
+    </axis>
+  </joint> -->
+
+
+    <!-- visual markers for debugging
+    <link name="rotor_0_blade_1_cp">
+      <gravity>0</gravity>
+      <pose>0.13 -0.22 0.216 0 -0 0</pose>
+      <visual name='rotor_0_visual_root'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.01</radius>
+          </sphere>
+        </geometry>
+      </visual>
+      <visual name='rotor_0_visual_tip'>
+        <pose>0.12 0 0 0 -0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.01</radius>
+          </sphere>
+        </geometry>
+      </visual>
+      <visual name='rotor_0_visual_cp'>
+        <pose>0.084 0 0 0 -0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.003</radius>
+          </sphere>
+        </geometry>
+      </visual>
+      <visual name='rotor_0_visual_cp_forward'>
+        <pose>0.084 0.02 0 0 -0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.003</radius>
+          </sphere>
+        </geometry>
+      </visual>
+      <visual name='rotor_0_visual_cp_upward'>
+        <pose>0.084 0 0.02 0 -0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.003</radius>
+          </sphere>
+        </geometry>
+      </visual>
+    </link>
+    <link name="rotor_0_blade_2_cp">
+      <gravity>0</gravity>
+      <pose>0.13 -0.22 0.216 0 -0 0</pose>
+      <visual name='rotor_0_visual_root'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.01</radius>
+          </sphere>
+        </geometry>
+      </visual>
+      <visual name='rotor_0_visual_tip'>
+        <pose>-0.12 0 0 0 -0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.01</radius>
+          </sphere>
+        </geometry>
+      </visual>
+      <visual name='rotor_0_visual_cp'>
+        <pose>-0.084 0 0 0 -0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.003</radius>
+          </sphere>
+        </geometry>
+      </visual>
+      <visual name='rotor_0_visual_cp_forward'>
+        <pose>-0.084 -0.02 0 0 -0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.003</radius>
+          </sphere>
+        </geometry>
+      </visual>
+      <visual name='rotor_0_visual_cp_upward'>
+        <pose>-0.084 0 0.02 0 -0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.003</radius>
+          </sphere>
+        </geometry>
+      </visual>
+    </link>
+
+    <link name="rotor_1_blade_1_cp">
+      <gravity>0</gravity>
+      <pose>-0.13 0.2 0.216 0 -0 0</pose>
+      <visual name='rotor_1_visual_root'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.01</radius>
+          </sphere>
+        </geometry>
+      </visual>
+      <visual name='rotor_1_visual_tip'>
+        <pose>0.12 0 0 0 -0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.01</radius>
+          </sphere>
+        </geometry>
+      </visual>
+      <visual name='rotor_1_visual_cp'>
+        <pose>0.084 0 0 0 -0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.003</radius>
+          </sphere>
+        </geometry>
+      </visual>
+      <visual name='rotor_1_visual_cp_forward'>
+        <pose>0.084 0.02 0 0 -0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.003</radius>
+          </sphere>
+        </geometry>
+      </visual>
+      <visual name='rotor_1_visual_cp_upward'>
+        <pose>0.084 0 0.02 0 -0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.003</radius>
+          </sphere>
+        </geometry>
+      </visual>
+    </link>
+    <link name="rotor_1_blade_2_cp">
+      <gravity>0</gravity>
+      <pose>-0.13 0.2 0.216 0 -0 0</pose>
+      <visual name='rotor_1_visual_root'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.01</radius>
+          </sphere>
+        </geometry>
+      </visual>
+      <visual name='rotor_1_visual_tip'>
+        <pose>-0.12 0 0 0 -0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.01</radius>
+          </sphere>
+        </geometry>
+      </visual>
+      <visual name='rotor_1_visual_cp'>
+        <pose>-0.084 0 0 0 -0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.003</radius>
+          </sphere>
+        </geometry>
+      </visual>
+      <visual name='rotor_1_visual_cp_forward'>
+        <pose>-0.084 -0.02 0 0 -0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.003</radius>
+          </sphere>
+        </geometry>
+      </visual>
+      <visual name='rotor_1_visual_cp_upward'>
+        <pose>-0.084 0 0.02 0 -0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.003</radius>
+          </sphere>
+        </geometry>
+      </visual>
+    </link>
+
+    <link name="rotor_2_blade_1_cp">
+      <gravity>0</gravity>
+      <pose>0.13 0.22 0.216 0 -0 0</pose>
+      <visual name='rotor_2_visual_root'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.01</radius>
+          </sphere>
+        </geometry>
+      </visual>
+      <visual name='rotor_2_visual_tip'>
+        <pose>0.12 0 0 0 -0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.01</radius>
+          </sphere>
+        </geometry>
+      </visual>
+      <visual name='rotor_2_visual_cp'>
+        <pose>0.084 0 0 0 -0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.003</radius>
+          </sphere>
+        </geometry>
+      </visual>
+      <visual name='rotor_2_visual_cp_forward'>
+        <pose>0.084 -0.02 0 0 -0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.003</radius>
+          </sphere>
+        </geometry>
+      </visual>
+      <visual name='rotor_2_visual_cp_upward'>
+        <pose>0.084 0 0.02 0 -0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.003</radius>
+          </sphere>
+        </geometry>
+      </visual>
+    </link>
+    <link name="rotor_2_blade_2_cp">
+      <gravity>0</gravity>
+      <pose>0.13 0.22 0.216 0 -0 0</pose>
+      <visual name='rotor_2_visual_root'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.01</radius>
+          </sphere>
+        </geometry>
+      </visual>
+      <visual name='rotor_2_visual_tip'>
+        <pose>-0.12 0 0 0 -0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.01</radius>
+          </sphere>
+        </geometry>
+      </visual>
+      <visual name='rotor_2_visual_cp'>
+        <pose>-0.084 0 0 0 -0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.003</radius>
+          </sphere>
+        </geometry>
+      </visual>
+      <visual name='rotor_2_visual_cp_forward'>
+        <pose>-0.084 0.02 0 0 -0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.003</radius>
+          </sphere>
+        </geometry>
+      </visual>
+      <visual name='rotor_2_visual_cp_upward'>
+        <pose>-0.084 0 0.02 0 -0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.003</radius>
+          </sphere>
+        </geometry>
+      </visual>
+    </link>
+
+    <link name="rotor_3_blade_1_cp">
+      <gravity>0</gravity>
+      <pose>-0.13 -0.2 0.216 0 -0 0</pose>
+      <visual name='rotor_3_visual_root'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.01</radius>
+          </sphere>
+        </geometry>
+      </visual>
+      <visual name='rotor_3_visual_tip'>
+        <pose>0.12 0 0 0 -0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.01</radius>
+          </sphere>
+        </geometry>
+      </visual>
+      <visual name='rotor_3_visual_cp'>
+        <pose>0.084 0 0 0 -0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.003</radius>
+          </sphere>
+        </geometry>
+      </visual>
+      <visual name='rotor_3_visual_cp_forward'>
+        <pose>0.084 -0.02 0 0 -0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.003</radius>
+          </sphere>
+        </geometry>
+      </visual>
+      <visual name='rotor_3_visual_cp_upward'>
+        <pose>0.084 0 0.02 0 -0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.003</radius>
+          </sphere>
+        </geometry>
+      </visual>
+    </link>
+    <link name="rotor_3_blade_2_cp">
+      <gravity>0</gravity>
+      <pose>-0.13 -0.2 0.216 0 -0 0</pose>
+      <visual name='rotor_3_visual_root'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.01</radius>
+          </sphere>
+        </geometry>
+      </visual>
+      <visual name='rotor_3_visual_tip'>
+        <pose>-0.12 0 0 0 -0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.01</radius>
+          </sphere>
+        </geometry>
+      </visual>
+      <visual name='rotor_3_visual_cp'>
+        <pose>-0.084 0 0 0 -0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.003</radius>
+          </sphere>
+        </geometry>
+      </visual>
+      <visual name='rotor_3_visual_cp_forward'>
+        <pose>-0.084 0.02 0 0 -0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.003</radius>
+          </sphere>
+        </geometry>
+      </visual>
+      <visual name='rotor_3_visual_cp_upward'>
+        <pose>-0.084 0 0.02 0 -0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.003</radius>
+          </sphere>
+        </geometry>
+      </visual>
+    </link>
+    -->
+
+    <!-- plugins -->
+    <plugin name="rotor_0_blade_1" filename="libLiftDragPlugin.so">
+      <a0>0.1</a0>
+      <alpha_stall>1.4</alpha_stall>
+      <cla>0.2500</cla>
+      <cda>0.10</cda>
+      <cma>0.00</cma>
+      <cla_stall>-0.025</cla_stall>
+      <cda_stall>0.0</cda_stall>
+      <cma_stall>0.0</cma_stall>
+      <area>0.2</area>
+      <air_density>1.2041</air_density>
+      <cp>0.084 0 0</cp>
+      <forward>0 1 0</forward>
+      <upward>0 0 1</upward>
+      <link_name>iris::rotor_0</link_name>
+    </plugin>
+    <plugin name="rotor_0_blade_2" filename="libLiftDragPlugin.so">
+      <a0>0.1</a0>
+      <alpha_stall>1.4</alpha_stall>
+      <cla>0.2500</cla>
+      <cda>0.10</cda>
+      <cma>0.00</cma>
+      <cla_stall>-0.025</cla_stall>
+      <cda_stall>0.0</cda_stall>
+      <cma_stall>0.0</cma_stall>
+      <area>0.2</area>
+      <air_density>1.2041</air_density>
+      <cp>-0.084 0 0</cp>
+      <forward>0 -1 0</forward>
+      <upward>0 0 1</upward>
+      <link_name>iris::rotor_0</link_name>
+    </plugin>
+
+    <plugin name="rotor_1_blade_1" filename="libLiftDragPlugin.so">
+      <a0>0.1</a0>
+      <alpha_stall>1.4</alpha_stall>
+      <cla>0.2500</cla>
+      <cda>0.10</cda>
+      <cma>0.00</cma>
+      <cla_stall>-0.025</cla_stall>
+      <cda_stall>0.0</cda_stall>
+      <cma_stall>0.0</cma_stall>
+      <area>0.2</area>
+      <air_density>1.2041</air_density>
+      <cp>0.084 0 0</cp>
+      <forward>0 1 0</forward>
+      <upward>0 0 1</upward>
+      <link_name>iris::rotor_1</link_name>
+    </plugin>
+    <plugin name="rotor_1_blade_2" filename="libLiftDragPlugin.so">
+      <a0>0.1</a0>
+      <alpha_stall>1.4</alpha_stall>
+      <cla>0.2500</cla>
+      <cda>0.10</cda>
+      <cma>0.00</cma>
+      <cla_stall>-0.025</cla_stall>
+      <cda_stall>0.0</cda_stall>
+      <cma_stall>0.0</cma_stall>
+      <area>0.2</area>
+      <air_density>1.2041</air_density>
+      <cp>-0.084 0 0</cp>
+      <forward>0 -1 0</forward>
+      <upward>0 0 1</upward>
+      <link_name>iris::rotor_1</link_name>
+    </plugin>
+
+    <plugin name="rotor_2_blade_1" filename="libLiftDragPlugin.so">
+      <a0>0.1</a0>
+      <alpha_stall>1.4</alpha_stall>
+      <cla>0.2500</cla>
+      <cda>0.10</cda>
+      <cma>0.00</cma>
+      <cla_stall>-0.025</cla_stall>
+      <cda_stall>0.0</cda_stall>
+      <cma_stall>0.0</cma_stall>
+      <area>0.2</area>
+      <air_density>1.2041</air_density>
+      <cp>0.084 0 0</cp>
+      <forward>0 -1 0</forward>
+      <upward>0 0 1</upward>
+      <link_name>iris::rotor_2</link_name>
+    </plugin>
+    <plugin name="rotor_2_blade_2" filename="libLiftDragPlugin.so">
+      <a0>0.1</a0>
+      <alpha_stall>1.4</alpha_stall>
+      <cla>0.2500</cla>
+      <cda>0.10</cda>
+      <cma>0.00</cma>
+      <cla_stall>-0.025</cla_stall>
+      <cda_stall>0.0</cda_stall>
+      <cma_stall>0.0</cma_stall>
+      <area>0.2</area>
+      <air_density>1.2041</air_density>
+      <cp>-0.084 0 0</cp>
+      <forward>0 1 0</forward>
+      <upward>0 0 1</upward>
+      <link_name>iris::rotor_2</link_name>
+    </plugin>
+
+    <plugin name="rotor_3_blade_1" filename="libLiftDragPlugin.so">
+      <a0>0.1</a0>
+      <alpha_stall>1.4</alpha_stall>
+      <cla>0.2500</cla>
+      <cda>0.10</cda>
+      <cma>0.00</cma>
+      <cla_stall>-0.025</cla_stall>
+      <cda_stall>0.0</cda_stall>
+      <cma_stall>0.0</cma_stall>
+      <area>0.2</area>
+      <air_density>1.2041</air_density>
+      <cp>0.084 0 0</cp>
+      <forward>0 -1 0</forward>
+      <upward>0 0 1</upward>
+      <link_name>iris::rotor_3</link_name>
+    </plugin>
+    <plugin name="rotor_3_blade_2" filename="libLiftDragPlugin.so">
+      <a0>0.1</a0>
+      <alpha_stall>1.4</alpha_stall>
+      <cla>0.2500</cla>
+      <cda>0.10</cda>
+      <cma>0.00</cma>
+      <cla_stall>-0.025</cla_stall>
+      <cda_stall>0.0</cda_stall>
+      <cma_stall>0.0</cma_stall>
+      <area>0.2</area>
+      <air_density>1.2041</air_density>
+      <cp>-0.084 0 0</cp>
+      <forward>0 1 0</forward>
+      <upward>0 0 1</upward>
+      <link_name>iris::rotor_3</link_name>
+    </plugin>
+    <plugin name="arducopter_plugin" filename="libArduCopterPlugin.so">
+      <imuName>iris_demo::iris::iris/imu_link::imu_sensor</imuName>
+      <connectionTimeoutMaxCount>5</connectionTimeoutMaxCount>
+      <rotor id="0">
+        <vel_p_gain>0.01</vel_p_gain>
+        <vel_i_gain>0</vel_i_gain>
+        <vel_d_gain>0</vel_d_gain>
+        <vel_i_max>0</vel_i_max>
+        <vel_i_min>0</vel_i_min>
+        <vel_cmd_max>2.0</vel_cmd_max>
+        <vel_cmd_min>-2.0</vel_cmd_min>
+        <jointName>iris::rotor_0_joint</jointName>
+        <turningDirection>ccw</turningDirection>
+        <rotorVelocitySlowdownSim>1</rotorVelocitySlowdownSim>
+      </rotor>
+      <rotor id="1">
+        <vel_p_gain>0.01</vel_p_gain>
+        <vel_i_gain>0</vel_i_gain>
+        <vel_d_gain>0</vel_d_gain>
+        <vel_i_max>0</vel_i_max>
+        <vel_i_min>0</vel_i_min>
+        <vel_cmd_max>2.0</vel_cmd_max>
+        <vel_cmd_min>-2.0</vel_cmd_min>
+        <jointName>iris::rotor_1_joint</jointName>
+        <turningDirection>ccw</turningDirection>
+        <rotorVelocitySlowdownSim>1</rotorVelocitySlowdownSim>
+      </rotor>
+      <rotor id="2">
+        <vel_p_gain>0.01</vel_p_gain>
+        <vel_i_gain>0</vel_i_gain>
+        <vel_d_gain>0</vel_d_gain>
+        <vel_i_max>0</vel_i_max>
+        <vel_i_min>0</vel_i_min>
+        <vel_cmd_max>2.0</vel_cmd_max>
+        <vel_cmd_min>-2.0</vel_cmd_min>
+        <jointName>iris::rotor_2_joint</jointName>
+        <turningDirection>cw</turningDirection>
+        <rotorVelocitySlowdownSim>1</rotorVelocitySlowdownSim>
+      </rotor>
+      <rotor id="3">
+        <vel_p_gain>0.01</vel_p_gain>
+        <vel_i_gain>0</vel_i_gain>
+        <vel_d_gain>0</vel_d_gain>
+        <vel_i_max>0</vel_i_max>
+        <vel_i_min>0</vel_i_min>
+        <vel_cmd_max>2.0</vel_cmd_max>
+        <vel_cmd_min>-2.0</vel_cmd_min>
+        <jointName>iris::rotor_3_joint</jointName>
+        <turningDirection>cw</turningDirection>
+        <rotorVelocitySlowdownSim>1</rotorVelocitySlowdownSim>
+      </rotor>
+    </plugin>
+
+  </model>
+</sdf>
