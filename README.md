@@ -29,16 +29,16 @@ ubuntu22.04 + ROS2 humble 环境下（其它ROS2可能也可以，但是对应�
 4. [DroidCam访问手机摄像头](https://www.dev47apps.com/)
 
 参考仓库：
-[ORB_SLAM3](https://github.com/UZ-SLAMLab/ORB_SLAM3)
-[ORB_SLAM3_ROS2](https://github.com/zang09/ORB_SLAM3_ROS2)
-[YOLOv8](https://github.com/ultralytics/ultralytics)
+1. [ORB_SLAM3](https://github.com/UZ-SLAMLab/ORB_SLAM3)
+2. [ORB_SLAM3_ROS2](https://github.com/zang09/ORB_SLAM3_ROS2)
+3. [YOLOv8](https://github.com/ultralytics/ultralytics)
 
 # 🔥项目结构
 - `offboard_pkg`：实现无人机控制和YOLOv8目标检测。
      - `launch`：
          - `apm.launch`：启动mavros，链接ros2和无人机的通信方案。
          - `gazebo.launch.py`：启动gazebo，加载世界和无人机。
-     - `materails`：一些材质，官方有。
+     - `materials`：一些材质，官方有。
      - `models/model.sdf`：iris无人机的基础上添加了摄像头等组件，**使用时**复制该文件替换`/home/用户名/.gazebo/models/iris_with_standoffs_demo/model.sdf`。
      - `offboard_pkg`：节点文件。
          - `cam_pc.py`：通过接收电脑摄像头画面发布话题，用于ORB_SLAM3建图。

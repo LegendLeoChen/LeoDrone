@@ -11,7 +11,7 @@ class CameraPublisher(Node):
         super().__init__('camera_publisher')
         self.publisher = self.create_publisher(Image, 'camera/image_raw', 10)
         self.timer = self.create_timer(1.0 / 30.0, self.publish_image)  # 30 FPS
-        self.url = "http://192.168.10.2:4747/mjpegfeed"  # 确保 URL 正确
+        self.url = "http://手机IP地址/mjpegfeed"  # 确保 URL 正确
         self.bridge = CvBridge()
 
     def publish_image(self):
