@@ -31,6 +31,7 @@ setup(
             'cam = offboard_pkg.cam:main',
             'cam_pc = offboard_pkg.cam_pc:main',
             'image_detection = offboard_pkg.image_detection:main',
+            'pointcloud = offboard_pkg.pointcloud:main',
         ],
     },
 )
